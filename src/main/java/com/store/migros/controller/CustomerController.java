@@ -1,7 +1,7 @@
 package com.store.migros.controller;
 
-import com.store.migros.model.Customer;
-import com.store.migros.service.ICustomerService;
+import com.store.migros.dto.CustomerDto;
+import com.store.migros.service.CustomerService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,30 +10,30 @@ import java.util.List;
 @RequestMapping("/customers")
 public class CustomerController {
 
-    private final ICustomerService customerService;
+    private final CustomerService customerService;
 
-    public CustomerController(ICustomerService customerService) {
+    public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
     }
 
     @GetMapping
-    public List<Customer> getAllCustomers() {
+    public List<CustomerDto> getAllCustomers() {
         return customerService.getAllCustomers();
     }
 
     @GetMapping("/{id}")
-    public Customer getCustomerById(@PathVariable Long id) {
+    public CustomerDto getCustomerById(@PathVariable Long id) {
         return customerService.getCustomerById(id);
     }
 
     @PostMapping
-    public Customer createCustomer(@RequestBody Customer customer) {
-        return customerService.createCustomer(customer);
+    public CustomerDto createCustomer(@RequestBody CustomerDto dto) {
+        return customerService.createCustomer(dto);
     }
 
     @PutMapping("/{id}")
-    public Customer updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
-        return customerService.updateCustomer(id, customer);
+    public CustomerDto updateCustomer(@PathVariable Long id, @RequestBody CustomerDto dto) {
+        return customerService.updateCustomer(id, dto);
     }
 
     @DeleteMapping("/{id}")

@@ -1,5 +1,7 @@
 package com.store.migros.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,6 +20,7 @@ public class OrderDetails {
 
 	@ManyToOne
 	@JoinColumn(name = "order_id", nullable = false)
+	@JsonBackReference
 	private Order order;
 
 	@ManyToOne
@@ -36,6 +39,7 @@ public class OrderDetails {
 		this.quantity = quantity;
 		this.price = price;
 	}
+
 	public Long getId() {
 		return id;
 	}
@@ -76,5 +80,4 @@ public class OrderDetails {
 		this.price = price;
 	}
 
-	
 }

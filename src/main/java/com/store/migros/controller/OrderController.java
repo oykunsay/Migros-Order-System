@@ -1,7 +1,7 @@
 package com.store.migros.controller;
 
-import com.store.migros.model.Order;
-import com.store.migros.service.IOrderService;
+import com.store.migros.dto.OrderDto;
+import com.store.migros.service.OrderService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,34 +10,34 @@ import java.util.List;
 @RequestMapping("/orders")
 public class OrderController {
 
-    private final IOrderService orderService;
+	private final OrderService orderService;
 
-    public OrderController(IOrderService orderService) {
-        this.orderService = orderService;
-    }
+	public OrderController(OrderService orderService) {
+		this.orderService = orderService;
+	}
 
-    @GetMapping
-    public List<Order> getAllOrders() {
-        return orderService.getAllOrders();
-    }
+	@GetMapping
+	public List<OrderDto> getAllOrders() {
+		return orderService.getAllOrders();
+	}
 
-    @GetMapping("/{id}")
-    public Order getOrderById(@PathVariable Long id) {
-        return orderService.getOrderById(id);
-    }
+	@GetMapping("/{id}")
+	public OrderDto getOrderById(@PathVariable Long id) {
+		return orderService.getOrderById(id);
+	}
 
-    @PostMapping
-    public Order createOrder(@RequestBody Order order) {
-        return orderService.createOrder(order);
-    }
+	@PostMapping
+	public OrderDto createOrder(@RequestBody OrderDto dto) {
+		return orderService.createOrder(dto);
+	}
 
-    @PutMapping("/{id}")
-    public Order updateOrder(@PathVariable Long id, @RequestBody Order order) {
-        return orderService.updateOrder(id, order);
-    }
+	@PutMapping("/{id}")
+	public OrderDto updateOrder(@PathVariable Long id, @RequestBody OrderDto dto) {
+		return orderService.updateOrder(id, dto);
+	}
 
-    @DeleteMapping("/{id}")
-    public void deleteOrder(@PathVariable Long id) {
-        orderService.deleteOrder(id);
-    }
+	@DeleteMapping("/{id}")
+	public void deleteOrder(@PathVariable Long id) {
+		orderService.deleteOrder(id);
+	}
 }
