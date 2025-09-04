@@ -1,10 +1,14 @@
 package com.store.migros.service;
 
 import com.store.migros.dto.OrderDto;
-import com.store.migros.dto.OrderDetailsDto;
 import com.store.migros.mapper.OrderMapper;
-import com.store.migros.model.*;
-import com.store.migros.repository.*;
+import com.store.migros.model.Customer;
+import com.store.migros.model.Order;
+import com.store.migros.model.OrderDetails;
+import com.store.migros.model.Product;
+import com.store.migros.repository.CustomerRepository;
+import com.store.migros.repository.OrderRepository;
+import com.store.migros.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,100 +17,81 @@ import java.util.List;
 @Service
 public class OrderService {
 
-    private final OrderRepository orderRepository;
-    private final OrderDetailsRepository orderDetailsRepository;
-    private final CustomerRepository customerRepository;
-    private final ProductRepository productRepository;
+	private final OrderRepository orderRepository;
+	private final CustomerRepository customerRepository;
+	private final ProductRepository productRepository;
 
-    public OrderService(OrderRepository orderRepository,
-                        OrderDetailsRepository orderDetailsRepository,
-                        CustomerRepository customerRepository,
-                        ProductRepository productRepository) {
-        this.orderRepository = orderRepository;
-        this.orderDetailsRepository = orderDetailsRepository;
-        this.customerRepository = customerRepository;
-        this.productRepository = productRepository;
-    }
+	public OrderService(OrderRepository orderRepository, CustomerRepository customerRepository,
+			ProductRepository productRepository) {
+		this.orderRepository = orderRepository;
+		this.customerRepository = customerRepository;
+		this.productRepository = productRepository;
+	}
 
-    public OrderDto createOrder(OrderDto dto) {
-        Customer customer = customerRepository.findById(dto.getCustomerId())
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+	public List<OrderDto> getAllOrders() {
+		List<Order> orders = orderRepository.findAll();
+		List<OrderDto> dtos = new ArrayList<>();
+		for (Order order : orders) {
+			dtos.add(OrderMapper.toDto(order));
+		}
+		return dtos;
+	}
 
-        Order order = new Order();
-        order.setCustomer(customer);
-        order.setOrderDate(dto.getOrderDate());
+	public OrderDto getOrderById(Long id) {
+		Order order = orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
+		return OrderMapper.toDto(order);
+	}
 
-        Order savedOrder = orderRepository.save(order);
+	public OrderDto createOrder(OrderDto dto) {
+		Order order = OrderMapper.toEntity(dto);
 
-        List<OrderDetails> orderDetailsList = new ArrayList<>();
-        for (OrderDetailsDto odDto : dto.getOrderDetails()) {
-            Product product = productRepository.findById(odDto.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product not found"));
-            OrderDetails od = new OrderDetails();
-            od.setOrder(savedOrder);
-            od.setProduct(product);
-            od.setQuantity(odDto.getQuantity());
-            orderDetailsList.add(od);
-        }
+		// Customer set
+		if (dto.getCustomerId() != null) {
+			Customer customer = customerRepository.findById(dto.getCustomerId())
+					.orElseThrow(() -> new RuntimeException("Customer not found"));
+			order.setCustomer(customer);
+		}
 
-        orderDetailsRepository.saveAll(orderDetailsList);
-        savedOrder.setOrderDetails(orderDetailsList);
+		// TotalPrice hesaplama ve Product ilişkilendirme
+		double totalPrice = 0.0;
+		for (OrderDetails detail : order.getOrderDetails()) {
+			Product product = productRepository.findById(detail.getProduct().getId())
+					.orElseThrow(() -> new RuntimeException("Product not found"));
+			detail.setProduct(product);
+			totalPrice += product.getPrice() * detail.getQuantity();
+		}
+		order.setTotalPrice(totalPrice);
 
-        return OrderMapper.toDto(savedOrder);
-    }
+		Order saved = orderRepository.save(order);
+		return OrderMapper.toDto(saved);
+	}
 
-    public List<OrderDto> getAllOrders() {
-        return orderRepository.findAll().stream()
-                .map(OrderMapper::toDto)
-                .toList();
-    }
+	public OrderDto updateOrder(Long id, OrderDto dto) {
+		Order existing = orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
 
-    public OrderDto getOrderById(Long id) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
-        return OrderMapper.toDto(order);
-    }
+		existing.setOrderDate(dto.getOrderDate());
 
-    public OrderDto updateOrder(Long id, OrderDto dto) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+		if (dto.getCustomerId() != null) {
+			Customer customer = customerRepository.findById(dto.getCustomerId())
+					.orElseThrow(() -> new RuntimeException("Customer not found"));
+			existing.setCustomer(customer);
+		}
 
-        if (dto.getCustomerId() != null) {
-            Customer customer = customerRepository.findById(dto.getCustomerId())
-                    .orElseThrow(() -> new RuntimeException("Customer not found"));
-            order.setCustomer(customer);
-        }
+		// TotalPrice yeniden hesapla
+		double totalPrice = 0.0;
+		for (OrderDetails detail : existing.getOrderDetails()) {
+			Product product = productRepository.findById(detail.getProduct().getId())
+					.orElseThrow(() -> new RuntimeException("Product not found"));
+			detail.setProduct(product);
+			totalPrice += product.getPrice() * detail.getQuantity();
+		}
+		existing.setTotalPrice(totalPrice);
 
-        if (dto.getOrderDate() != null) {
-            order.setOrderDate(dto.getOrderDate());
-        }
+		Order updated = orderRepository.save(existing);
+		return OrderMapper.toDto(updated);
+	}
 
-        if (dto.getOrderDetails() != null) {
-            orderDetailsRepository.deleteAll(order.getOrderDetails());
-
-            List<OrderDetails> newDetails = new ArrayList<>();
-            for (OrderDetailsDto odDto : dto.getOrderDetails()) {
-                Product product = productRepository.findById(odDto.getProductId())
-                        .orElseThrow(() -> new RuntimeException("Product not found"));
-                OrderDetails od = new OrderDetails();
-                od.setOrder(order);
-                od.setProduct(product);
-                od.setQuantity(odDto.getQuantity());
-                newDetails.add(od);
-            }
-
-            orderDetailsRepository.saveAll(newDetails);
-            order.setOrderDetails(newDetails);
-        }
-
-        order = orderRepository.save(order);
-        return OrderMapper.toDto(order);
-    }
-
-    public void deleteOrder(Long id) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
-        orderDetailsRepository.deleteAll(order.getOrderDetails());
-        orderRepository.delete(order);
-    }
+	public void deleteOrder(Long id) {
+		orderRepository.deleteById(id);
+	}
 }

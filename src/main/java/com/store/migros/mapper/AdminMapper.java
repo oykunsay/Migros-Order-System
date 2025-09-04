@@ -6,12 +6,7 @@ import com.store.migros.model.Admin;
 public class AdminMapper {
 
 	public static AdminDto toDto(Admin admin) {
-		AdminDto dto = new AdminDto();
-		dto.setId(admin.getId());
-		dto.setName(admin.getName());
-		dto.setEmail(admin.getEmail());
-		dto.setPhoneNumber(admin.getPhoneNumber());
-		return dto;
+		return new AdminDto(admin.getName(), admin.getEmail(), admin.getPhoneNumber());
 	}
 
 	public static Admin toEntity(AdminDto dto) {

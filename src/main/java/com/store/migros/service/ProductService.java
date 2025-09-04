@@ -6,8 +6,8 @@ import com.store.migros.model.Product;
 import com.store.migros.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -19,7 +19,12 @@ public class ProductService {
 	}
 
 	public List<ProductDto> getAllProducts() {
-		return productRepository.findAll().stream().map(ProductMapper::toDto).collect(Collectors.toList());
+		List<Product> products = productRepository.findAll();
+		List<ProductDto> dtos = new ArrayList<>();
+		for (Product product : products) {
+			dtos.add(ProductMapper.toDto(product));
+		}
+		return dtos;
 	}
 
 	public ProductDto getProductById(Long id) {
@@ -29,19 +34,19 @@ public class ProductService {
 
 	public ProductDto createProduct(ProductDto dto) {
 		Product product = ProductMapper.toEntity(dto);
-		product = productRepository.save(product);
-		return ProductMapper.toDto(product);
+		Product saved = productRepository.save(product);
+		return ProductMapper.toDto(saved);
 	}
 
 	public ProductDto updateProduct(Long id, ProductDto dto) {
-		Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+		Product existing = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
 
-		product.setName(dto.getName());
-		product.setPrice(dto.getPrice());
-		product.setStock(dto.getStock());
+		existing.setName(dto.getName());
+		existing.setPrice(dto.getPrice());
+		existing.setStock(dto.getStock());
 
-		product = productRepository.save(product);
-		return ProductMapper.toDto(product);
+		Product updated = productRepository.save(existing);
+		return ProductMapper.toDto(updated);
 	}
 
 	public void deleteProduct(Long id) {

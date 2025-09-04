@@ -21,19 +21,9 @@ public class AdminController {
 		return adminService.getAllAdmins();
 	}
 
-	@GetMapping("/{id}")
-	public AdminDto getAdminById(@PathVariable Long id) {
-		return adminService.getAdminById(id);
-	}
-
 	@PostMapping
-	public AdminDto createAdmin(@RequestBody AdminDto dto, @RequestParam String password) {
-		return adminService.createAdmin(dto, password);
-	}
-
-	@PutMapping("/{id}")
-	public AdminDto updateAdmin(@PathVariable Long id, @RequestBody AdminDto dto) {
-		return adminService.updateAdmin(id, dto);
+	public AdminDto createAdmin(@RequestBody AdminDto dto) {
+		return adminService.createAdmin(dto);
 	}
 
 	@DeleteMapping("/{id}")

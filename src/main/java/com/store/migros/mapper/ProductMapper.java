@@ -16,6 +16,7 @@ public class ProductMapper {
 
 	public static Product toEntity(ProductDto dto) {
 		Product product = new Product();
+		product.setId(dto.getId());
 		product.setName(dto.getName());
 		product.setPrice(dto.getPrice());
 		product.setStock(dto.getStock());

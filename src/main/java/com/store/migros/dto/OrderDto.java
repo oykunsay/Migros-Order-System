@@ -1,43 +1,23 @@
 package com.store.migros.dto;
 
+import lombok.*;
 import java.time.LocalDate;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class OrderDto {
+
 	private Long id;
+
 	private Long customerId;
+
 	private LocalDate orderDate;
+	private Double totalPrice;
+
 	private List<OrderDetailsDto> orderDetails;
+	private List<ProductDto> products;
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Long getCustomerId() {
-		return customerId;
-	}
-
-	public void setCustomerId(Long customerId) {
-		this.customerId = customerId;
-	}
-
-	public LocalDate getOrderDate() {
-		return orderDate;
-	}
-
-	public void setOrderDate(LocalDate orderDate) {
-		this.orderDate = orderDate;
-	}
-
-	public List<OrderDetailsDto> getOrderDetails() {
-		return orderDetails;
-	}
-
-	public void setOrderDetails(List<OrderDetailsDto> orderDetails) {
-		this.orderDetails = orderDetails;
-	}
 }

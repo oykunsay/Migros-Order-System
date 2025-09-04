@@ -1,24 +1,23 @@
 package com.store.migros.mapper;
 
 import com.store.migros.dto.CustomerDto;
+import com.store.migros.dto.AddressDto;
 import com.store.migros.model.Customer;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CustomerMapper {
 
 	public static CustomerDto toDto(Customer customer) {
-		CustomerDto dto = new CustomerDto();
-		dto.setId(customer.getId());
-		dto.setName(customer.getName());
-		dto.setEmail(customer.getEmail());
-		dto.setPhoneNumber(customer.getPhoneNumber());
-		return dto;
+		List<AddressDto> addresses = customer.getAddresses() == null ? null
+				: customer.getAddresses().stream().map(AddressMapper::toDto).collect(Collectors.toList());
+
+		return CustomerDto.builder().id(customer.getId()).name(customer.getName()).email(customer.getEmail())
+				.password(customer.getPassword()).phoneNumber(customer.getPhoneNumber()).addresses(addresses).build();
 	}
 
 	public static Customer toEntity(CustomerDto dto) {
-		Customer customer = new Customer();
-		customer.setName(dto.getName());
-		customer.setEmail(dto.getEmail());
-		customer.setPhoneNumber(dto.getPhoneNumber());
-		return customer;
+		return Customer.builder().name(dto.getName()).email(dto.getEmail()).password(dto.getPassword())
+				.phoneNumber(dto.getPhoneNumber()).build();
 	}
 }

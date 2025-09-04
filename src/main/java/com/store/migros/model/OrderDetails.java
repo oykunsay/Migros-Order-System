@@ -28,16 +28,14 @@ public class OrderDetails {
 	private Product product;
 
 	private Integer quantity;
-	private Double price;
 
 	public OrderDetails() {
 	}
 
-	public OrderDetails(Order order, Product product, Integer quantity, Double price) {
+	public OrderDetails(Order order, Product product, Integer quantity) {
 		this.order = order;
 		this.product = product;
 		this.quantity = quantity;
-		this.price = price;
 	}
 
 	public Long getId() {
@@ -70,14 +68,6 @@ public class OrderDetails {
 
 	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
-	}
-
-	public Double getPrice() {
-		return price;
-	}
-
-	public void setPrice(Double price) {
-		this.price = price;
 	}
 
 }
