@@ -45,14 +45,12 @@ public class OrderService {
 	public OrderDto createOrder(OrderDto dto) {
 		Order order = OrderMapper.toEntity(dto);
 
-		// Customer set
 		if (dto.getCustomerId() != null) {
 			Customer customer = customerRepository.findById(dto.getCustomerId())
 					.orElseThrow(() -> new RuntimeException("Customer not found"));
 			order.setCustomer(customer);
 		}
 
-		// TotalPrice hesaplama ve Product ilişkilendirme
 		double totalPrice = 0.0;
 		for (OrderDetails detail : order.getOrderDetails()) {
 			Product product = productRepository.findById(detail.getProduct().getId())
@@ -77,7 +75,6 @@ public class OrderService {
 			existing.setCustomer(customer);
 		}
 
-		// TotalPrice yeniden hesapla
 		double totalPrice = 0.0;
 		for (OrderDetails detail : existing.getOrderDetails()) {
 			Product product = productRepository.findById(detail.getProduct().getId())

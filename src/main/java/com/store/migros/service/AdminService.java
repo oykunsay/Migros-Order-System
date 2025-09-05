@@ -18,6 +18,11 @@ public class AdminService {
 		this.adminRepository = adminRepository;
 	}
 
+	public AdminDto getAdminById(Long id) {
+		Admin admin = adminRepository.findById(id).orElseThrow(() -> new RuntimeException("Admin not found"));
+		return AdminMapper.toDto(admin);
+	}
+
 	public List<AdminDto> getAllAdmins() {
 		List<Admin> admins = adminRepository.findAll();
 		List<AdminDto> dtos = new ArrayList<>();
