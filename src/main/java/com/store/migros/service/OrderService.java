@@ -55,9 +55,18 @@ public class OrderService {
 		for (OrderDetails detail : order.getOrderDetails()) {
 			Product product = productRepository.findById(detail.getProduct().getId())
 					.orElseThrow(() -> new RuntimeException("Product not found"));
+
+			if (product.getStock() < detail.getQuantity()) {
+				throw new RuntimeException("Not enough stock for product: " + product.getName());
+			}
+
+			product.setStock(product.getStock() - detail.getQuantity());
+			productRepository.save(product);
+
 			detail.setProduct(product);
 			totalPrice += product.getPrice() * detail.getQuantity();
 		}
+
 		order.setTotalPrice(totalPrice);
 
 		Order saved = orderRepository.save(order);
