@@ -1,0 +1,79 @@
+.list-product {
+  width: 90%;
+  margin: 20px auto;
+  padding-left: 80px;
+  font-family: Arial, sans-serif;
+}
+
+.list-product h1 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  text-align: center;
+  color: #333;
+}
+
+.listproduct-header,
+.listproduct-row {
+  display: grid;
+  grid-template-columns: 60px 1.5fr 1fr 1fr 1fr 1fr;
+  align-items: center;
+  padding: 12px 10px;
+  border-bottom: 1px solid #ddd;
+  gap: 10px;
+}
+
+.listproduct-header {
+  font-weight: bold;
+  background-color: #f5f5f5;
+}
+
+.listproduct-row:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.listproduct-row input,
+.listproduct-row select {
+  width: 90%;
+  padding: 5px;
+  font-size: 14px;
+}
+
+.remove-icon,
+.edit-icon {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.preview-image {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+
+.listproduct-body {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .listproduct-header,
+  .listproduct-row {
+    grid-template-columns: 40px 1fr 1fr;
+    grid-template-areas:
+      "edit title remove"
+      "edit price remove"
+      "edit stock remove"
+      "edit category remove";
+    row-gap: 8px;
+    padding: 10px;
+  }
+
+  .listproduct-header span:nth-child(n + 2),
+  .listproduct-row span:nth-child(n + 2) {
+    font-size: 14px;
+  }
+}

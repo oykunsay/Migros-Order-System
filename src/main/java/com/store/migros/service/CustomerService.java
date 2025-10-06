@@ -28,6 +28,10 @@ public class CustomerService {
 	}
 
 	public CustomerDto createCustomer(CustomerDto dto) {
+
+		if (customerRepository.findByEmail(dto.getEmail()).isPresent()) {
+			throw new RuntimeException("Email is already in use");
+		}
 		Customer customer = CustomerMapper.toEntity(dto);
 		Customer saved = customerRepository.save(customer);
 		return CustomerMapper.toDto(saved);
@@ -51,4 +55,16 @@ public class CustomerService {
 	public void deleteCustomer(Long id) {
 		customerRepository.deleteById(id);
 	}
+
+	public CustomerDto login(String email, String password) {
+		Customer customer = customerRepository.findByEmail(email)
+				.orElseThrow(() -> new RuntimeException("User not found"));
+
+		if (!customer.getPassword().equals(password)) {
+			throw new RuntimeException("Invalid credentials");
+		}
+
+		return CustomerMapper.toDto(customer);
+	}
+
 }

@@ -24,6 +24,6 @@ public class Customer {
 	@Column(name = "phone_number")
 	private String phoneNumber;
 
-	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Address> addresses;
 }

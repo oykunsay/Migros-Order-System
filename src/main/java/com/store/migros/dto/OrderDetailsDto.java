@@ -9,6 +9,8 @@ import lombok.*;
 public class OrderDetailsDto {
 
 	private Long productId;
+	private String productName;
+
 	private int quantity;
 	private Double price;
 }

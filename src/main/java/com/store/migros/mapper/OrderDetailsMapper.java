@@ -8,11 +8,12 @@ public class OrderDetailsMapper {
 
 	public static OrderDetailsDto toDto(OrderDetails detail) {
 		return OrderDetailsDto.builder().productId(detail.getProduct() != null ? detail.getProduct().getId() : null)
+				.productName(detail.getProduct() != null ? detail.getProduct().getName() : "Unknown")
 				.quantity(detail.getQuantity())
 				.price(detail.getProduct() != null ? detail.getProduct().getPrice() * detail.getQuantity() : 0.0)
 				.build();
 	}
-
+ 
 	public static OrderDetails toEntity(OrderDetailsDto dto) {
 		OrderDetails details = new OrderDetails();
 		details.setQuantity(dto.getQuantity());

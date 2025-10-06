@@ -11,8 +11,9 @@ import com.store.migros.repository.OrderRepository;
 import com.store.migros.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -29,12 +30,13 @@ public class OrderService {
 	}
 
 	public List<OrderDto> getAllOrders() {
-		List<Order> orders = orderRepository.findAll();
-		List<OrderDto> dtos = new ArrayList<>();
-		for (Order order : orders) {
-			dtos.add(OrderMapper.toDto(order));
-		}
-		return dtos;
+		List<Order> orders = orderRepository.findAllWithDetailsAndProducts();
+		return orders.stream().map(OrderMapper::toDto).collect(Collectors.toList());
+	}
+
+	public List<OrderDto> getOrdersByCustomerId(Long customerId) {
+		List<Order> orders = orderRepository.findByCustomerIdWithDetailsAndProducts(customerId);
+		return orders.stream().map(OrderMapper::toDto).collect(Collectors.toList());
 	}
 
 	public OrderDto getOrderById(Long id) {
@@ -44,6 +46,10 @@ public class OrderService {
 
 	public OrderDto createOrder(OrderDto dto) {
 		Order order = OrderMapper.toEntity(dto);
+
+		if (order.getOrderDate() == null) {
+			order.setOrderDate(LocalDate.now()); 
+		}
 
 		if (dto.getCustomerId() != null) {
 			Customer customer = customerRepository.findById(dto.getCustomerId())

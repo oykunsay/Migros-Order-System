@@ -27,6 +27,7 @@ public class OrderController {
 
 	@PostMapping
 	public OrderDto createOrder(@RequestBody OrderDto dto) {
+		System.out.println("Received DTO in backend: " + dto);
 		return orderService.createOrder(dto);
 	}
 

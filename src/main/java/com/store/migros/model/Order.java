@@ -26,8 +26,16 @@ public class Order {
 	@JoinColumn(name = "customer_id", nullable = false)
 	private Customer customer;
 
+	@Column(name = "order_date", nullable = false)
 	private LocalDate orderDate;
 	private Double totalPrice;
-	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<OrderDetails> orderDetails;
+
+	@PrePersist
+	public void prePersist() {
+		if (orderDate == null) {
+			orderDate = LocalDate.now();
+		}
+	}
 }

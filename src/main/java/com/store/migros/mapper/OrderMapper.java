@@ -5,6 +5,7 @@ import com.store.migros.dto.OrderDetailsDto;
 import com.store.migros.model.Order;
 import com.store.migros.model.OrderDetails;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,13 +26,13 @@ public class OrderMapper {
 
 	public static Order toEntity(OrderDto dto) {
 		Order order = new Order();
-		order.setOrderDate(dto.getOrderDate());
+		order.setOrderDate(dto.getOrderDate() != null ? dto.getOrderDate() : LocalDate.now());
 
 		List<OrderDetails> detailsList = new ArrayList<>();
 		if (dto.getOrderDetails() != null) {
 			for (OrderDetailsDto detailDto : dto.getOrderDetails()) {
 				OrderDetails detail = OrderDetailsMapper.toEntity(detailDto);
-				detail.setOrder(order); 
+				detail.setOrder(order);
 				detailsList.add(detail);
 			}
 		}

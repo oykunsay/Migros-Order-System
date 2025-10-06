@@ -6,7 +6,7 @@ import com.store.migros.model.Address;
 public class AddressMapper {
 
 	public static AddressDto toDto(Address address) {
-		return new AddressDto(address.getAddressDetails(), address.getCity(), address.getDistrict(),
+		return new AddressDto(address.getId(), address.getAddressDetails(), address.getCity(), address.getDistrict(),
 				address.getAddressType());
 	}
 

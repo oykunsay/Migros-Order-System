@@ -18,6 +18,5 @@ public class OrderDto {
 	private Double totalPrice;
 
 	private List<OrderDetailsDto> orderDetails;
-	private List<ProductDto> products;
 
 }

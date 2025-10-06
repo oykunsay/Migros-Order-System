@@ -21,6 +21,11 @@ public class AddressController {
 		return addressService.getAddressesByCustomerId(customerId);
 	}
 
+	@PutMapping("/{id}")
+	public AddressDto updateAddress(@PathVariable Long customerId, @PathVariable Long id, @RequestBody AddressDto dto) {
+		return addressService.updateAddress(customerId, id, dto);
+	}
+
 	@PostMapping
 	public AddressDto createAddress(@PathVariable Long customerId, @RequestBody AddressDto dto) {
 		return addressService.createAddressForCustomer(customerId, dto);

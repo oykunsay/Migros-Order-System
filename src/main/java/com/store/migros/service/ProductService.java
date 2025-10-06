@@ -1,55 +1,79 @@
 package com.store.migros.service;
 
 import com.store.migros.dto.ProductDto;
-import com.store.migros.mapper.ProductMapper;
 import com.store.migros.model.Product;
 import com.store.migros.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
 
 	private final ProductRepository productRepository;
 
-	public ProductService(ProductRepository productRepository) {
-		this.productRepository = productRepository;
+	public ProductService(ProductRepository repository) {
+		this.productRepository = repository;
 	}
 
 	public List<ProductDto> getAllProducts() {
-		List<Product> products = productRepository.findAll();
-		List<ProductDto> dtos = new ArrayList<>();
-		for (Product product : products) {
-			dtos.add(ProductMapper.toDto(product));
-		}
-		return dtos;
+		return productRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	public ProductDto getProductById(Long id) {
-		Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
-		return ProductMapper.toDto(product);
+		return productRepository.findById(id).map(this::toDto).orElse(null);
+	}
+
+	public List<ProductDto> getProductsByCategory(String category) {
+		return productRepository.findByCategory(category).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	public ProductDto createProduct(ProductDto dto) {
-		Product product = ProductMapper.toEntity(dto);
-		Product saved = productRepository.save(product);
-		return ProductMapper.toDto(saved);
+		Product product = Product.builder().name(dto.getName()).price(dto.getPrice()).stock(dto.getStock())
+				.category(dto.getCategory()).imageUrl(dto.getImageUrl()).build();
+		productRepository.save(product);
+		return toDto(product);
+	}
+
+	public ProductDto updateProductImage(Long id, MultipartFile file) throws Exception {
+		Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+
+		String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+		Path uploadDir = Paths.get("uploads");
+		if (!Files.exists(uploadDir)) {
+			Files.createDirectories(uploadDir);
+		}
+		Path path = uploadDir.resolve(fileName);
+		Files.copy(file.getInputStream(), path);
+
+		product.setImageUrl("http://localhost:8080/uploads/" + fileName);
+		productRepository.save(product);
+
+		return toDto(product);
 	}
 
 	public ProductDto updateProduct(Long id, ProductDto dto) {
-		Product existing = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
-
-		existing.setName(dto.getName());
-		existing.setPrice(dto.getPrice());
-		existing.setStock(dto.getStock());
-
-		Product updated = productRepository.save(existing);
-		return ProductMapper.toDto(updated);
+		Product product = productRepository.findById(id).orElseThrow();
+		product.setName(dto.getName());
+		product.setPrice(dto.getPrice());
+		product.setStock(dto.getStock());
+		product.setCategory(dto.getCategory());
+		product.setImageUrl(dto.getImageUrl());
+		productRepository.save(product);
+		return toDto(product);
 	}
 
 	public void deleteProduct(Long id) {
 		productRepository.deleteById(id);
+	}
+
+	private ProductDto toDto(Product product) {
+		return ProductDto.builder().id(product.getId()).name(product.getName()).price(product.getPrice())
+				.stock(product.getStock()).category(product.getCategory()).imageUrl(product.getImageUrl()).build();
 	}
 }
