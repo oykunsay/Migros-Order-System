@@ -6,10 +6,9 @@ import Item from "../Item/Item";
 const RelatedProducts = ({ currentProductId }) => {
   const { allProduct } = useContext(ShopContext);
 
-  // Aynı kategoriden veya rastgele diğer ürünler
   const related = allProduct
     .filter((product) => product.id !== currentProductId)
-    .slice(0, 6); // max 6 ürün göster
+    .slice(0, 6); 
 
   return (
     <div className="relatedproducts">
